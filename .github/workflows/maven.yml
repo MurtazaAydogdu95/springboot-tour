@@ -33,6 +33,10 @@ jobs:
         name: Springboot Report
         path: target/surefire-reports
 
+    - name: Debug Docker Context
+      run: |
+          ls -al
+          ls -al target
 
     - name: Login to Docker
       uses: docker/login-action@v3
@@ -40,7 +44,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Setup Docker buildx
+    - name: Setup Docker Buildx
       uses: docker/setup-buildx-action@v3
 
     - name: Build and Push Docker Image
