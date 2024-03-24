@@ -35,7 +35,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        target: murtaza66/springboot-tour:latest
+        target: murtaza.aydogdu@hotmail.com/springboot-tour:latest
       env:
-        DOCKER_USERNAME: murtaza66
+        DOCKER_USERNAME: murtaza.aydogdu@hotmail.com
         DOCKER_PASSWORD: Murti_666
