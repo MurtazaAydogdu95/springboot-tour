@@ -2,7 +2,7 @@ FROM openjdk:17
 
 WORKDIR /app
 
-COPY target/springboot-tour-0.0.1.jar /app/app.jar
+COPY target/springboot-tour-0.0.1-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 8080
 
