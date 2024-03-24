@@ -27,4 +27,4 @@ jobs:
       if: success() || failure()
       with:
         name: Springboot Report
-        path: target/site/serentiy/
+        path: target/surefire-reports
