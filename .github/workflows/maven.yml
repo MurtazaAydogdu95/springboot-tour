@@ -22,8 +22,8 @@ jobs:
     - name: Build with Maven
       run: |
         mvn clean verify
-        echo "JAR_PATH=$(find target -name '*.jar' -type f)"
-        echo "::set-env name=JAR_PATH::$JAR_PATH"
+        JAR_PATH=$(find target -name '*.jar' -type f)
+        echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
 
 
     - name: Test report
