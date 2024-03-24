@@ -37,5 +37,5 @@ jobs:
         push: true
         target: murtaza.aydogdu@hotmail.com/springboot-tour:latest
       env:
-        DOCKER_USERNAME: murtaza.aydogdu@hotmail.com
-        DOCKER_PASSWORD: Murti_666
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
