@@ -28,3 +28,14 @@ jobs:
       with:
         name: Springboot Report
         path: target/surefire-reports
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-actions@v4
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        target: murtaza66/springboot-tour.0.0.1-SNAPSHOT:latest
+      env:
+        DOCKER_USERNAME: murtaza66
+        DOCKER_PASSWORD: Murti_666
