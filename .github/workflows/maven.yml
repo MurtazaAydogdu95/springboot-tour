@@ -52,13 +52,8 @@ jobs:
         build-args: JAR_PATH=${{ env.JAR_PATH }}
 
     - name: Deploy To EC2 using Terraform
-      uses: applyboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_PUBLIC_IP }}
-        username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
+      run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} 'bash -s' << 'EOF'
           sudo apt update
           sudo apt install -y unzip
           wget https://releases.hashicorp.com/terraform/0.15.5/terraform_0.15.5_linux_amd64.zip
@@ -66,4 +61,4 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform init
           terraform apply -auto-approve
-
+          EQF
