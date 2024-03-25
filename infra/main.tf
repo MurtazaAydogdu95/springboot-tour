@@ -31,4 +31,20 @@ resource "aws_instance" "springboot-tour" {
     private_key = file("~/.ssh/id_rsa")
     host = self.public_ip
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "sudo apt install -y docker.io",
+      "sudo usermod -aG docker ubuntu",
+      "sudo systemctl start docker",
+      "sudo docker pull ${DOCKER_IMAGE_NAME}",
+      "sudo docker run -d -p 8000:8000 ${DOCKER_IMAGE_NAME}:latest"
+    ]
+
+    vars = {
+      DOCKER_IMAGE_NAME = "${var.docker.image_name}"
+    }
+
+  }
 }

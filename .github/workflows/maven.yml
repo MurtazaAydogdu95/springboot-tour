@@ -19,12 +19,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
     - name: Build with Maven
       run: |
         mvn clean verify
         JAR_PATH=$(find target -name '*.jar' -type f)
         echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
-
 
     - name: Test report
       uses: actions/upload-artifact@v3
@@ -50,3 +50,20 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/springboot:latest
         build-args: JAR_PATH=${{ env.JAR_PATH }}
+
+    - name: Deploy To EC2 using Terraform
+      uses: applyboy/ssh-actions@master
+      with:
+        host: ${{ secrets.EC2_PUBLIC_IP }}
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          sudo apt update
+          sudo apt install -y unzip
+          wget https://releases.hashicorp.com/terraform/0.15.5/terraform_0.15.5_linux_amd64.zip
+          unzip terraform_0.15.5_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform init
+          terraform apply -auto-approve
+
