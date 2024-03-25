@@ -19,6 +19,6 @@ variable "environment" {
 variable "cidr" {
   default = "10.0.0.0/16"
 }
-variable "docker-iamge" {
+variable "docker_image" {
   default = "murtaza66/springboot:latest"
 }

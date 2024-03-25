@@ -43,7 +43,7 @@ resource "aws_instance" "springboot-tour" {
     ]
 
     vars = {
-      DOCKER_IMAGE_NAME = "${var.docker.image_name}"
+      DOCKER_IMAGE_NAME = var.docker_image
     }
 
   }
