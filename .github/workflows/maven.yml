@@ -52,7 +52,7 @@ jobs:
         build-args: JAR_PATH=${{ env.JAR_PATH }}
 
     - name: Deploy To EC2 using Terraform
-      uses: applyboy/ssh-actions@master
+      uses: applyboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_PUBLIC_IP }}
         username: ubuntu
