@@ -61,4 +61,4 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform init
           terraform apply -auto-approve
-          EQF
+          EOF
