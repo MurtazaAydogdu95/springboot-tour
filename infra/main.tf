@@ -25,3 +25,28 @@ resource "aws_ecr_repository" "springboot_repository" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.springboot_repository.repository_url
 }
+
+resource "aws_ecr_repository_policy" "ecr_policy" {
+  repository = aws_ecr_repository.springboot_repository.name
+
+  policy = jsonencode({
+    "Version": "2008-10-17",
+    "Statement": [
+      {
+        "Sid": "Allow-Docker-Push-Pull",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage"
+        ]
+      }
+    ]
+  })
+}
