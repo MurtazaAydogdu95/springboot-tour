@@ -41,8 +41,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Login To ECR
-      id: login-ecr
-      run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets_AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Build Docker Image
       run: |
@@ -51,7 +50,7 @@ jobs:
 
     - name: Tag docker image
       run: |
-        docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.<your-aws-region>.amazonaws.com/springboot-repository:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
+        docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
     - name: Push Docker Image To ECR
       run: |
