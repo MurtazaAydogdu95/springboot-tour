@@ -48,7 +48,7 @@ jobs:
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
       - name: Authenticate with ECR
-        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name your-cluster-name
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
 
       - name: Apply Kubernetes Manifests
         run: kubectl apply -f ../../k8s/deployment.yml
