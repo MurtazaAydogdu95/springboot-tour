@@ -12,44 +12,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Build with Maven
-      run: |
-        mvn clean verify
-        JAR_PATH=$(find target -name '*.jar' -type f)
-        echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Test report
-      uses: actions/upload-artifact@v3
-      if: success() || failure()
-      with:
-        name: Springboot Report
-        path: target/surefire-reports
+      - name: Build with Maven
+        run: mvn clean verify
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Login To ECR
-      run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      - name: Login To ECR
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-    - name: Build Docker Image
-      run: |
-        docker build -t springboot:latest .
+      - name: Build Docker Image
+        run: |
+          docker build -t springboot-repository:latest .
 
-    - name: Tag docker image
-      run: |
-        docker tag springboot-repository:latest 334372355104.dkr.ecr.eu-west-2.amazonaws.com/springboot-repository:latest
-    - name: Push Docker Image To ECR
-      run: |
-        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
+      - name: Tag Docker Image for ECR
+        run: |
+          docker tag springboot-repository:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
+
+      - name: Push Docker Image To ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
