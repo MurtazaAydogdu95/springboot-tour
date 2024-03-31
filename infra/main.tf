@@ -18,32 +18,10 @@ resource "aws_key_pair" "springboottour" {
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
-resource "aws_instance" "springboot-tour" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name = aws_key_pair.springboottour.key_name
-  provider = aws
-  subnet_id = aws_subnet.sub1.id
+resource "aws_ecr_repository" "springboot_repository" {
+  name = "springboot-repository"
+}
 
-  connection {
-    type = "ssh"
-    user = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
-    host = self.public_ip
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt update",
-      "sudo apt install -y docker.io",
-      "sudo usermod -aG docker ubuntu",
-      "sudo systemctl start docker",
-      "sudo docker pull ${DOCKER_IMAGE_NAME}",
-      "sudo docker run -d -p 8000:8000 ${DOCKER_IMAGE_NAME}:latest"
-    ]
-
-    vars = {
-      DOCKER_IMAGE_NAME = var.docker_image
-    }
-  }
+output "ecr_repository_url" {
+  value = aws_ecr_repository.springboot_repository.repository_url
 }
