@@ -53,5 +53,6 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/springboot:latest ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}/springboot:latest
 
     - name: Push Docker Image To ECR
+        echo ${{ steps.login-ecr.outputs.registry }}
       run: |
         docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}/springboot:latest
