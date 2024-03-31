@@ -47,10 +47,9 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/springboot:latest .
 
-
     - name: Tag docker image
       run: |
-        docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
+        docker tag springboot-repository:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
     - name: Push Docker Image To ECR
       run: |
