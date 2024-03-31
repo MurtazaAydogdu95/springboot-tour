@@ -48,12 +48,15 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/springboot:latest .
 
-    - name: Tag docker image
-        echo ${{ steps.login-ecr.outputs.registry }}
-        echo ${{ secrets.ECR_REPOSITORY }}
+    - name: Get ECR Repository Name
+      id: get-repo-name
       run: |
-        docker tag ${{ secrets.DOCKER_USERNAME }}/springboot:latest ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}/springboot:latest
+        echo "::set-output name=repo_name::$(aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY }} --query 'repositories[0].repositoryUri' --output text)"
+
+    - name: Tag docker image
+      run: |
+        docker tag ${{ secrets.DOCKER_USERNAME }}/springboot:latest ${{ steps.login-ecr.outputs.registry }}/${{ steps.get-repo-name.outputs.repo_name }}/springboot:latest
 
     - name: Push Docker Image To ECR
       run: |
-        docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}/springboot:latest
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ steps.get-repo-name.outputs.repo_name }}/springboot:latest
