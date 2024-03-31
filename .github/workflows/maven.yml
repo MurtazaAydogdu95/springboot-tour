@@ -51,4 +51,4 @@ jobs:
         run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
 
       - name: Apply Kubernetes Manifests
-        run: kubectl apply -f ../../k8s/deployment.yml
+        run: kubectl apply -f k8s/deployment.yml
