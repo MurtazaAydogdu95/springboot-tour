@@ -45,7 +45,7 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/springboot:latest .
+        docker build -t springboot:latest .
 
     - name: Tag docker image
       run: |
