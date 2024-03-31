@@ -59,4 +59,4 @@ jobs:
 
     - name: Push Docker Image To ECR
       run: |
-        docker push ${{ steps.login-ecr.outputs.registry }}/${{ steps.get-repo-name.outputs.repo_name }}/springboot:latest
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ steps.get-repo-name.outputs.repo_name }}/springboot-repository:latest

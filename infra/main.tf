@@ -20,6 +20,7 @@ resource "aws_key_pair" "springboottour" {
 
 resource "aws_ecr_repository" "springboot_repository" {
   name = "springboot-repository"
+  image_tag_mutability = "MUTABLE"
 }
 
 output "ecr_repository_url" {
