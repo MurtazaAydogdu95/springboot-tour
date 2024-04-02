@@ -113,12 +113,20 @@ resource "aws_security_group" "eks_cluster_sg" {
   }
 }
 
+data "template_file" "springboot_ingress_yaml" {
+  template = file("${path.module}/../k8s/deployment.yml")  # Adjust the path to your deployment.yml file
+}
+
+resource "kubernetes_manifest" "springboot_ingress" {
+  manifest = data.template_file.springboot_ingress_yaml.rendered
+}
+
 resource "aws_eks_cluster" "eks_cluster" {
 
   vpc_config {
     security_group_ids = [aws_security_group.eks_cluster_sg.id]
-    subnet_ids         = []
+    subnet_ids         = module.vpc.public_subnets
   }
-  name     = ""
+  name     = local.cluster_name
   role_arn = ""
 }
