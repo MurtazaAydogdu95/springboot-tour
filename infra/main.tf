@@ -128,5 +128,5 @@ resource "aws_eks_cluster" "eks_cluster" {
     subnet_ids         = module.vpc.public_subnets
   }
   name     = local.cluster_name
-  role_arn = ""
+  role_arn = "arn:aws:iam::334372355104:role/springboot20240402201613152600000001"
 }
