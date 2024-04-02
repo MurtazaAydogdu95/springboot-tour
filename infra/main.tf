@@ -114,7 +114,7 @@ resource "aws_security_group" "eks_cluster_sg" {
 }
 
 data "template_file" "springboot_ingress_yaml" {
-  template = file("${path.module}/../k8s/deployment.yml")  # Adjust the path to your deployment.yml file
+  template = file("${path.module}/../k8s/ingress.yml")
 }
 
 resource "kubernetes_manifest" "springboot_ingress" {
