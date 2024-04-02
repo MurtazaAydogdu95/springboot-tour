@@ -22,6 +22,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Install kubectl
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: get pods
+
       - name: Build with Maven
         run: mvn clean verify
 

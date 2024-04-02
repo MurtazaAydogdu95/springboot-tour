@@ -6,27 +6,13 @@ resource "aws_vpc" "myvpc" {
   cidr_block = var.cidr
 }
 
-resource "aws_subnet" "sub1" {
-  vpc_id = aws_vpc.myvpc.id
-  cidr_block = "10.0.0.0/24"
-  availability_zone = "eu-west-2a"
-  map_public_ip_on_launch = true
-}
-
-resource "aws_subnet" "sub2" {
-  vpc_id = aws_vpc.myvpc.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "eu-west-2b"
-  map_public_ip_on_launch = true
-}
-
 resource "aws_key_pair" "springboottour" {
-  key_name = "terraform-demo"
+  key_name   = "terraform-demo"
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
 resource "aws_ecr_repository" "springboot_repository" {
-  name = "springboot-repository"
+  name                 = "springboot-repository"
   image_tag_mutability = "MUTABLE"
 }
 
@@ -59,67 +45,56 @@ resource "aws_ecr_repository_policy" "ecr_policy" {
   })
 }
 
-resource "aws_eks_cluster" "springboot" {
-  name     = "springboot"
-  role_arn = aws_iam_role.eks-role.arn
+locals {
+  cluster_name = "springboot"
+}
 
-  vpc_config {
-    subnet_ids = [
-      aws_subnet.sub1.id,
-      aws_subnet.sub2.id
-    ]
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "springboot-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["eu-west-2a", "eu-west-2b"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
+
+  enable_nat_gateway = true
+  enable_vpn_gateway = false
+
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
   }
+
+  single_nat_gateway = true
+  one_nat_gateway_per_az = false
+
+  map_public_ip_on_launch = true
 }
 
-resource "aws_iam_role" "eks-role" {
-  name = "example-eks-role"
+module "eks" {
+  source = "terraform-aws-modules/eks/aws"
+  version = "~> 17.0"
 
-  assume_role_policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [{
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }]
-  })
-}
+  cluster_name = local.cluster_name
+  subnets      = module.vpc.public_subnets
 
-resource "aws_iam_role_policy_attachment" "example" {
-  role       = aws_iam_role.eks-role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-}
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
 
-resource "aws_iam_role_policy_attachment" "example_node_groups" {
-  role       = aws_iam_role.eks-role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
+  vpc_id = module.vpc.vpc_id
 
-resource "aws_iam_policy" "eks_cni_policy" {
-  name        = "MyEKSCNIPolicy"
-  description = "Custom policy for Amazon EKS CNI"
-  policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [{
-      "Effect": "Allow",
-      "Action": [
-        "eks:DescribeCluster",
-        "eks:DescribeNodegroup",
-        "eks:ListNodegroups",
-        "eks:ListClusters",
-        "eks:ListFargateProfiles",
-        "eks:ListUpdates",
-        "eks:ListAddons",
-        "eks:AccessKubernetesApi",
-        "eks:ListTagsForResource"
-      ],
-      "Resource": "*"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "example_cni" {
-  role       = aws_iam_role.eks-role.name
-  policy_arn = aws_iam_policy.eks_cni_policy.arn
+  node_groups = {
+    default = {
+      instance_type = "t2.micro"
+      additional_tags = {
+        Terraform = "true"
+        Environment = "dev"
+      }
+      desired_capacity = 2
+    }
+  }
 }

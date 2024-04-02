@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: springboot-ingress
+spec:
+  rules:
+    - host: https://CFB3C570BECEF7897BCE66A1BD92B769.gr7.eu-west-2.eks.amazonaws.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: springboot-ingress
+                port:
+                  number: 80
