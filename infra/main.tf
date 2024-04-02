@@ -97,4 +97,28 @@ module "eks" {
       desired_capacity = 2
     }
   }
+
+  security_group_id = aws_security_group.eks_cluster_sg.id
+
+}
+
+resource "aws_security_group" "eks_cluster_sg" {
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_eks_cluster" "eks_cluster" {
+
+  vpc_config {
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
+    subnet_ids         = []
+  }
+  name     = ""
+  role_arn = ""
 }
