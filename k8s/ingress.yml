@@ -4,13 +4,13 @@ metadata:
   name: springboot-ingress
 spec:
   rules:
-    - host: https://CFB3C570BECEF7897BCE66A1BD92B769.gr7.eu-west-2.eks.amazonaws.com
+    - host: cfb3c570becef7897bce66a1bd92b769.gr7.eu-west-2.eks.amazonaws.com
       http:
         paths:
           - pathType: Prefix
             path: "/"
             backend:
               service:
-                name: springboot-ingress
+                name: springboot-service
                 port:
                   number: 80
