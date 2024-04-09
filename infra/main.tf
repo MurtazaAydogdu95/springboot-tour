@@ -47,6 +47,7 @@ resource "aws_ecr_repository_policy" "ecr_policy" {
 
 locals {
   cluster_name = "springboot"
+  role_name = "springboot-role"
 }
 
 module "vpc" {
@@ -73,35 +74,6 @@ module "vpc" {
   map_public_ip_on_launch = true
 }
 
-module "eks" {
-  source = "terraform-aws-modules/eks/aws"
-  version = "~> 17.0"
-
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.public_subnets
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-
-  vpc_id = module.vpc.vpc_id
-
-  node_groups = {
-    default = {
-      instance_type = "t2.micro"
-      additional_tags = {
-        Terraform = "true"
-        Environment = "dev"
-      }
-      desired_capacity = 2
-    }
-  }
-
-  security_group_id = aws_security_group.eks_cluster_sg.id
-
-}
-
 resource "aws_security_group" "eks_cluster_sg" {
   vpc_id = module.vpc.vpc_id
 
@@ -113,12 +85,20 @@ resource "aws_security_group" "eks_cluster_sg" {
   }
 }
 
-data "template_file" "springboot_ingress_yaml" {
-  template = file("${path.module}/../k8s/ingress.yml")
-}
-
-resource "kubernetes_manifest" "springboot_ingress" {
-  manifest = data.template_file.springboot_ingress_yaml.rendered
+resource "aws_iam_role" "eks_role" {
+  name               = local.role_name
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "eks.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
 resource "aws_eks_cluster" "eks_cluster" {
@@ -128,5 +108,35 @@ resource "aws_eks_cluster" "eks_cluster" {
     subnet_ids         = module.vpc.public_subnets
   }
   name     = local.cluster_name
-  role_arn = "arn:aws:iam::334372355104:role/springboot20240402201613152600000001"
+  role_arn = aws_iam_role.eks_role.arn
+}
+
+resource "aws_cloudwatch_log_group" "eks_cluster_logs" {
+  name = "/aws/eks/${aws_eks_cluster.eks_cluster.name}"
+}
+
+data "aws_iam_policy_document" "eks_logs_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      aws_cloudwatch_log_group.eks_cluster_logs.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "eks_logs_policy" {
+  name        = "eks_cluster_logs_policy"
+  description = "IAM policy for EKS cluster logs"
+  policy      = data.aws_iam_policy_document.eks_logs_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "eks_logs_policy_attachment" {
+  depends_on = [aws_eks_cluster.eks_cluster]
+  role       = aws_iam_role.eks_role.name
+  policy_arn = aws_iam_policy.eks_logs_policy.arn
 }
