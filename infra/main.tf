@@ -111,6 +111,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.eks_role.arn
 }
 
+
 resource "aws_cloudwatch_log_group" "eks_cluster_logs" {
   name = "/aws/eks/${aws_eks_cluster.eks_cluster.name}"
 }
