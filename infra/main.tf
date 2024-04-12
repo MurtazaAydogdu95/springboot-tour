@@ -158,5 +158,5 @@
   resource "aws_iam_role_policy_attachment" "eks_logs_policy_attachment" {
     depends_on = [aws_eks_cluster.eks_cluster]
     role       = aws_iam_role.eks_role.name
-    policy_arn = aws_iam_policy.eks_logs_policy.arn
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   }
