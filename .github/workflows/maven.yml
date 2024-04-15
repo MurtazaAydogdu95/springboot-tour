@@ -50,10 +50,15 @@ jobs:
       - name: Authenticate with ECR
         run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
 
-      - name: Set up Kubernetes
-        uses: aws/setup-kubectl@v1
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo " ${{secrets.KUBECONFIG}}" > ~/.kube/config
 
       - name: Apply Kubernetes Manifests
         run: | 
