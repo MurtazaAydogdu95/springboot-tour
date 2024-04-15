@@ -61,7 +61,8 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" | base64 --decode > /tmp/config && export KUBECONFIG=/tmp/config
 
       - name: Debug Kubernetes Config
-        run: cat ~/.kube/config
+        run: kubectl config view
+
 
       - name: Apply Kubernetes Manifests
         run: | 
