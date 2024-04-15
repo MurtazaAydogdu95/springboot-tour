@@ -160,6 +160,7 @@
     role       = aws_iam_role.eks_role.name
     policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   }
+
   resource "aws_iam_policy" "eks_policy" {
     name        = "eks-cluster-policy"
     description = "Policy for Amazon EKS cluster"
@@ -172,7 +173,14 @@
           Action = [
             "eks:DescribeCluster",
             "eks:ListNodegroups",
-            "eks:ListClusters"
+            "eks:ListClusters",
+            "eks:CreateCluster",
+            "eks:DeleteCluster",
+            "eks:UpdateClusterConfig",
+            "eks:TagResource",
+            "eks:UntagResource",
+            "eks:DescribeUpdate",
+            "eks:UpdateClusterVersion"
           ]
           Resource = "*"
         }
