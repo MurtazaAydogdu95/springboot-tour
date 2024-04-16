@@ -16,9 +16,6 @@ variable "environment" {
   default     = "development"
 }
 
-variable "cidr" {
-  default = "10.0.0.0/16"
-}
 variable "docker_image" {
   default = "murtaza66/springboot:latest"
 }
