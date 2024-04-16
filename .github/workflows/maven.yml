@@ -58,11 +58,7 @@ jobs:
       - name: Configure kubectl
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ~/.kube/config
-
-      - name: Debug Kubernetes Config
-        run: kubectl config view
-
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > /tmp/config && export KUBECONFIG=/tmp/config
 
       - name: Apply Kubernetes Manifests
         run: | 
