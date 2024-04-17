@@ -128,7 +128,7 @@ resource "aws_instance" "springboot" {
   ami           = "ami-0b9932f4918a00c4f"
   instance_type = "t2.micro"
   key_name      = aws_key_pair.springboottour.key_name
-  subnet_id     = module.vpc.private_subnets[0]
+  subnet_id     = module.vpc.public_subnets[0]
   tags = {
     Name = "eks-worker-${count.index}"
   }
@@ -190,63 +190,4 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy_attachment" {
 resource "aws_iam_role_policy_attachment" "eks_ec2_policy_attachment" {
   role       = aws_iam_role.eks_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"  # Required policy for pulling images from ECR
-}
-
-# Kubernetes Deployment resource for Spring Boot application
-resource "kubernetes_deployment" "springboot_deployment" {
-  metadata {
-    name = "springboot-deployment"
-    labels = {
-      app = "springboot"
-    }
-  }
-
-  spec {
-    replicas = 3
-
-    selector {
-      match_labels = {
-        app = "springboot"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "springboot"
-        }
-      }
-
-      spec {
-        container {
-          image = "${aws_ecr_repository.springboot_repository.repository_url}:latest"
-          name  = "springboot"
-          port {
-            container_port = 8080
-          }
-        }
-      }
-    }
-  }
-}
-
-# Kubernetes Service resource for exposing Spring Boot application
-resource "kubernetes_service" "springboot_service" {
-  metadata {
-    name = "springboot-service"
-  }
-
-  spec {
-    selector = {
-      app = "springboot"
-    }
-
-    port {
-      protocol   = "TCP"
-      port       = 8080
-      target_port = 8080
-    }
-
-    type = "LoadBalancer"
-  }
 }
