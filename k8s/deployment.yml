@@ -83,3 +83,25 @@ subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
     name: kubernetes
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: service-creator-role
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["create", "get", "update", "delete", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-creator-binding
+subjects:
+  - kind: User
+    name: MurtazaAydogdu
+roleRef:
+  kind: Role
+  name: service-creator-role
+  apiGroup: rbac.authorization.k8s.io
+
