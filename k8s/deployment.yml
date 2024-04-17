@@ -121,7 +121,7 @@ kind: ClusterRole
 metadata:
   name: anonymous-access
 rules:
-  - nonResourceURLs: [*]
+  - nonResourceURLs: ["/","/api"]
     verbs: ["get"]
 
 ---
