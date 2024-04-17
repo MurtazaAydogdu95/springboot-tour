@@ -2,6 +2,11 @@
     region = "eu-west-2"
   }
 
+  provider "kubernetes" {
+    host = aws_eks_cluster.eks_cluster.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority)
+  }
+
   resource "aws_vpc" "myvpc" {
     cidr_block = var.cidr
   }
@@ -124,8 +129,8 @@
     ami            = "ami-0b9932f4918a00c4f"
     instance_type  = "t2.micro"
     key_name       = aws_key_pair.springboottour.key_name
-    subnet_id      = element(module.vpc.public_subnets, count.index)
-
+#     subnet_id      = element(module.vpc.public_subnets, count.index)
+    subnet_id = module.vpc.private_subnets[0]
     tags = {
       Name = "eks-worker-${count.index}"
     }
@@ -156,7 +161,7 @@
   }
 
   resource "aws_iam_role_policy_attachment" "eks_logs_policy_attachment" {
-    depends_on = [aws_eks_cluster.eks_cluster]
+#     depends_on = [aws_eks_cluster.eks_cluster]
     role       = aws_iam_role.eks_role.name
     policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   }
@@ -191,4 +196,19 @@
   resource "aws_iam_role_policy_attachment" "eks_policy_attachment" {
     role       = aws_iam_role.eks_role.name
     policy_arn = aws_iam_policy.eks_policy.arn
+  }
+
+  resource "aws_iam_role_policy_attachment" "eks_additional_policies_attachment" {
+    role       = aws_iam_role.eks_role.name
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"    # Required policy for worker nodes
+  }
+
+  resource "aws_iam_role_policy_attachment" "eks_cni_policy_attachment" {
+    role       = aws_iam_role.eks_role.name
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"          # Required policy for networking
+  }
+
+  resource "aws_iam_role_policy_attachment" "eks_ec2_policy_attachment" {
+    role       = aws_iam_role.eks_role.name
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"  # Required policy for pulling images from ECR
   }
