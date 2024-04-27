@@ -45,7 +45,7 @@ jobs:
 
       - name: Push Docker Image To ECR
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cnap-springboot-ecr:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
       - name: Authenticate with ECR
         run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
