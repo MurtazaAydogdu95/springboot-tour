@@ -47,9 +47,6 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
-      - name: Authenticate with ECR
-        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
-
       - name: Deploy to ECS
         run: |
           aws ecs update-service --cluster springboot --service app_service --force-new-deployment
