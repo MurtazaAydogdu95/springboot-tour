@@ -50,18 +50,7 @@ jobs:
       - name: Authenticate with ECR
         run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name springboot
 
-      - name: Install kubectl
+      - name: Deploy to ECS
         run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          aws ecs update-service --cluster springboot --service app_service --force-new-deployment
 
-      - name: Configure kubectl
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > /tmp/config && export KUBECONFIG=/tmp/config
-
-      - name: Apply Kubernetes Manifests
-        run: | 
-          kubectl apply -f k8s/deployment.yml
-          kubectl apply -f k8s/ingress.yml
-      
