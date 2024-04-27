@@ -49,5 +49,5 @@ jobs:
 
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster springboot --service app_service --force-new-deployment
+          aws ecs update-service --cluster springboot --service app_services --force-new-deployment
 
