@@ -47,7 +47,3 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
-      - name: Deploy to ECS
-        run: |
-          aws ecs update-service --cluster springboot --service app_services --force-new-deployment
-
