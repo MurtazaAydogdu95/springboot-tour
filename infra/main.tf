@@ -21,6 +21,3 @@ module "ecs" {
   security_groups = module.vpc.sg
   subnets = module.vpc.subnet
 }
-
-
-

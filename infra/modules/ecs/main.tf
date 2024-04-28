@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = jsonencode([
     {
       name   = var.task_container_name
-      image  = "334372355104.dkr.ecr.us-east-1.amazonaws.com/cnap-springboot-ecr"
+      image  = "334372355104.dkr.ecr.eu-west-2.amazonaws.com/springboot-repository"
       cpu    = var.task_cpu
       memory = var.task_memory
       portMappings = [
