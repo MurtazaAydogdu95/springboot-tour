@@ -47,3 +47,9 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/springboot-repository:latest
 
+      - name: Authenticate with ECR
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username ${{secrets.DOCKER_USERNAME}} --password-stdin ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f deployment.yaml
